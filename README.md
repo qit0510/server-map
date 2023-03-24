@@ -49,7 +49,6 @@ yarn start  // 启动服务
 
 > [OpenStreetMap]: https://download.geofabrik.de/
 >[maptiler Data]: https://data.maptiler.com/downloads/planet/
->  
 
 
 ## 地图样式获取方式
