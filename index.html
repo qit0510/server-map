@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body,
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+    <link rel="stylesheet" href="http://localhost:1234/api/assets/mapbox-gl.css" />
+    <script src="http://localhost:1234/api/assets/mapbox-gl.js"></script>
+</head>
+
+<body>
+    <div id="map"></div>
+</body>
+<script>
+    var map = new mapboxgl.Map({
+        container: "map", // container id
+        style: "http://localhost:1234/api/styles/style1", // style URL
+        center: [116.40, 39.9066], // starting position [lng, lat]
+        zoom: 13 // starting zoom
+    });
+    const marker1 = new mapboxgl.Marker()
+        .setLngLat([12.554729, 55.70651])
+        .addTo(map);
+
+    // Create a default Marker, colored black, rotated 45 degrees.
+    const marker2 = new mapboxgl.Marker({ color: 'black', rotation: 45 })
+        .setLngLat([12.65147, 55.608166])
+        .addTo(map);
+</script>
+
+</html>
