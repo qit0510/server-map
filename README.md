@@ -47,11 +47,11 @@ yarn start  // 启动服务
 >本项目不包含瓦片数据文件，文件过大已加入网盘，请自行下载
 >瓦片资源可通通过一下资源获取 目录位置 data\tilesets
 
-> [OpenStreetMap]: https://download.geofabrik.de/
->[maptiler Data]: https://data.maptiler.com/downloads/planet/
+> OpenStreetMap: https://download.geofabrik.de/
+> maptiler Data: https://data.maptiler.com/downloads/planet/
 
 
 ## 地图样式获取方式
 
-> [maptiler]: https://www.maptiler.com/maps/
-> [mapbox]: https://studio.mapbox.com/
+> maptiler: https://www.maptiler.com/maps/
+> mapbox: https://studio.mapbox.com/
