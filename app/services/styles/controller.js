@@ -3,7 +3,8 @@ const path = require('path')
 const consolidate = require('consolidate')
 
 module.exports.list = (req, res, next) => {
-  const stylesDir = path.resolve(`./data/styles`)
+  const projectRoot = req.app.get('PROJECT_ROOT')
+  const stylesDir = path.resolve(projectRoot, 'data/styles')
 
   fs.readdir(stylesDir, (err, files) => {
     if (err) return next(err)
@@ -18,7 +19,8 @@ module.exports.list = (req, res, next) => {
 
 module.exports.get = (req, res, next) => {
   const { styleId } = req.params
-  const stylePath = path.resolve(`./data/styles/${styleId}.json`)
+  const projectRoot = req.app.get('PROJECT_ROOT')
+  const stylePath = path.resolve(projectRoot, 'data/styles', `${styleId}.json`)
 
   res.sendFile(stylePath, err => {
     if (err) return next(err)

@@ -9,14 +9,21 @@
     "test": "tape test/**/*.js",
     "lint": "eslint app/**/*.js",
     "format": "prettier-eslint --write app/**/*.js",
-    "dist": "pkg . --out-path=dist/ --targets=win,linux,macos --compress=GZip"
+    "dist": "pkg . --out-path=dist/ --targets=node18-win-x64,node18-linux-x64,node18-macos-x64 --compress=GZip"
   },
   "engines": {
     "node": ">=12"
   },
   "pkg": {
     "assets": [
-      "node_modules/@mapbox/glyph-pbf-composite/proto/glyphs.proto"
+      "node_modules/@mapbox/glyph-pbf-composite/proto/glyphs.proto",
+      "node_modules/.pnpm/sqlite3@5.1.7/node_modules/sqlite3/build/Release/node_sqlite3.node",
+      "public/**/*",
+      "data/styles/**/*.json",
+      "data/sprites/**/*",
+      "data/fonts/**/*",
+      "data/assets/**/*",
+      "index.html"
     ]
   },
   "lint-staged": {
@@ -30,7 +37,8 @@
     "cors": "^2.8.1",
     "ejs": "^3.1.5",
     "express": "^4.17.1",
-    "morgan": "^1.8.2"
+    "morgan": "^1.8.2",
+    "pg": "^8.21.0"
   },
   "devDependencies": {
     "docsify-cli": "^4.4.3",

@@ -3,7 +3,8 @@ const path = require('path')
 const glyphPbfComposite = require('@mapbox/glyph-pbf-composite')
 
 module.exports.list = (req, res, next) => {
-  const fontsDir = path.resolve(`./data/fonts`)
+  const projectRoot = req.app.get('PROJECT_ROOT')
+  const fontsDir = path.resolve(projectRoot, 'data/fonts')
 
   fs.readdir(fontsDir, (err, files) => {
     if (err) return next(err)
@@ -33,7 +34,8 @@ module.exports.list = (req, res, next) => {
 module.exports.getGlyphs = (req, res, next) => {
   const { start, end } = req.params
   const fontIds = req.params.fontIds.split(',').map(fontId => fontId.trim())
-  const fontsDir = path.resolve(`./data/fonts`)
+  const projectRoot = req.app.get('PROJECT_ROOT')
+  const fontsDir = path.resolve(projectRoot, 'data/fonts')
   const glyphPaths = fontIds.map(fontId => `${fontsDir}/${fontId}/${start}-${end}.pbf`)
 
   const promises = glyphPaths.map(glyphPath => {

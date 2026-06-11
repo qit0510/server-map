@@ -4,7 +4,8 @@ const MBTiles = require('@mapbox/mbtiles')
 const consolidate = require('consolidate')
 
 module.exports.list = (req, res, next) => {
-  const tilesetsDir = path.resolve(`./data/tilesets`)
+  const tilesetsRoot = req.app.get('TILESETS_ROOT')
+  const tilesetsDir = path.resolve(tilesetsRoot, 'data/tilesets')
 
   fs.readdir(tilesetsDir, (err, files) => {
     if (err) return next(err)
@@ -19,7 +20,8 @@ module.exports.list = (req, res, next) => {
 
 module.exports.getTilejson = (req, res, next) => {
   const { tilesetId } = req.params
-  const tilesetsDir = path.resolve(`./data/tilesets`)
+  const tilesetsRoot = req.app.get('TILESETS_ROOT')
+  const tilesetsDir = path.resolve(tilesetsRoot, 'data/tilesets')
   const source = `mbtiles://${tilesetsDir}/${tilesetId}.mbtiles?mode=ro`
 
   new MBTiles(source, (err, source) => {
@@ -50,7 +52,8 @@ module.exports.getHtml = (req, res, next) => {
 
 module.exports.getTile = (req, res, next) => {
   const { tilesetId, z, x, y } = req.params
-  const tilesetsDir = path.resolve(`./data/tilesets`)
+  const tilesetsRoot = req.app.get('TILESETS_ROOT')
+  const tilesetsDir = path.resolve(tilesetsRoot, 'data/tilesets')
   const source = `mbtiles://${tilesetsDir}/${tilesetId}.mbtiles?mode=ro`
 
   new MBTiles(source, (err, source) => {

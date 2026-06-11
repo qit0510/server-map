@@ -1,0 +1,4 @@
+allowBuilds:
+  core-js: true
+  docsify: true
+  sqlite3: true

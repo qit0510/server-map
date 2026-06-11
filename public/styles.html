@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Server Map — 多风格地图预览</title>
+  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+  <link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet"/>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; overflow: hidden; }
+
+    #map { position: absolute; inset: 0; }
+
+    .style-bar {
+      position: absolute; top: 12px; left: 50%; transform: translateX(-50%); z-index: 10;
+      display: flex; gap: 4px; background: rgba(20,20,30,0.85); backdrop-filter: blur(12px);
+      border-radius: 10px; padding: 5px; box-shadow: 0 2px 16px rgba(0,0,0,0.3);
+    }
+    .style-bar button {
+      border: 1px solid transparent; background: transparent; color: #8899aa;
+      font-size: 12px; padding: 7px 14px; border-radius: 7px; cursor: pointer;
+      white-space: nowrap; transition: all 0.2s;
+    }
+    .style-bar button:hover { background: rgba(255,255,255,0.08); color: #fff; }
+    .style-bar button.active { background: rgba(255,255,255,0.15); color: #fff; border-color: rgba(255,255,255,0.2); font-weight: 600; }
+
+    .coords {
+      position: absolute; bottom: 12px; left: 12px; z-index: 10;
+      background: rgba(0,0,0,0.65); color: #ccc; font-size: 11px;
+      padding: 4px 10px; border-radius: 4px; font-family: "SF Mono", Monaco, monospace;
+    }
+
+    .loading {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 20;
+      background: rgba(0,0,0,0.75); color: #fff; padding: 12px 24px;
+      border-radius: 8px; font-size: 14px; pointer-events: none; display: none;
+    }
+    .loading.show { display: block; }
+
+    @media (max-width: 640px) {
+      .style-bar { flex-wrap: wrap; max-width: 340px; }
+      .style-bar button { font-size: 11px; padding: 5px 10px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <div class="loading" id="loading">加载中...</div>
+
+  <div class="style-bar" id="styleBar">
+    <button data-style="osm-bright" class="active">标准</button>
+    <button data-style="navy">海军蓝</button>
+    <button data-style="dark">暗黑大屏</button>
+    <button data-style="satellite">卫星地球</button>
+    <button data-style="cyberpunk">赛博朋克</button>
+    <button data-style="minimal">极简灰底</button>
+    <button data-style="osm-bright-raw">原始版</button>
+  </div>
+
+  <div class="coords" id="coords"></div>
+
+  <script>
+    const API_BASE = 'http://localhost:1234/api';
+    let map;
+
+    function showLoading(s) {
+      document.getElementById('loading').classList.toggle('show', s);
+    }
+
+    async function loadStyle(name) {
+      const res = await fetch(`${API_BASE}/styles/${name}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      return res.json();
+    }
+
+    async function switchStyle(name) {
+      showLoading(true);
+      try {
+        const style = await loadStyle(name);
+        if (!map) {
+          map = new maplibregl.Map({
+            container: 'map',
+            style: style,
+            center: [104, 35],
+            zoom: 4,
+            maxZoom: 18
+          });
+          map.addControl(new maplibregl.NavigationControl(), 'top-right');
+
+          map.on('mousemove', e => {
+            const { lng, lat } = e.lngLat;
+            document.getElementById('coords').textContent =
+              `经度: ${lng.toFixed(6)}  纬度: ${lat.toFixed(6)}  缩放: ${map.getZoom().toFixed(1)}`;
+          });
+
+          map.on('idle', () => showLoading(false));
+          map.on('error', e => console.warn('[Map]', e.error?.message));
+        } else {
+          map.once('idle', () => showLoading(false));
+          map.setStyle(style);
+        }
+      } catch (err) {
+        console.error('加载样式失败:', err);
+        alert(`加载失败: ${err.message}`);
+        showLoading(false);
+      }
+    }
+
+    document.querySelectorAll('#styleBar button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#styleBar button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        switchStyle(btn.dataset.style);
+      });
+    });
+
+    switchStyle('osm-bright');
+  </script>
+</body>
+</html>

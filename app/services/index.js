@@ -4,6 +4,7 @@ const tilesets = require('./tilesets')
 const sprites = require('./sprites')
 const fonts = require('./fonts')
 const assets = require('./assets')
+const search = require('./search')
 
 const router = express.Router()
 
@@ -12,5 +13,6 @@ router.use(tilesets)
 router.use(sprites)
 router.use(fonts)
 router.use(assets)
+router.use(search)
 
 module.exports = router

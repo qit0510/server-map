@@ -2,7 +2,8 @@ const fs = require('fs')
 const path = require('path')
 
 module.exports.list = (req, res, next) => {
-  const spritesDir = path.resolve(`./data/sprites`)
+  const projectRoot = req.app.get('PROJECT_ROOT')
+  const spritesDir = path.resolve(projectRoot, 'data/sprites')
 
   fs.readdir(spritesDir, (err, files) => {
     if (err) return next(err)
@@ -31,7 +32,8 @@ module.exports.list = (req, res, next) => {
 
 module.exports.getSprite = (req, res, next) => {
   const { spriteId, scale = '', format = 'json' } = req.params
-  const spritePath = path.resolve(`./data/sprites/${spriteId}/sprite${scale}.${format}`)
+  const projectRoot = req.app.get('PROJECT_ROOT')
+  const spritePath = path.resolve(projectRoot, 'data/sprites', spriteId, `sprite${scale}.${format}`)
 
   res.sendFile(spritePath, err => {
     if (err) return next(err)

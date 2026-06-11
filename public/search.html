@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Server Map — 在线搜索</title>
+  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+  <link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet"/>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; overflow: hidden; }
+
+    #map { position: absolute; inset: 0; }
+
+    /* 搜索面板 */
+    .search-panel {
+      position: absolute; top: 12px; left: 12px; z-index: 10;
+      display: flex; gap: 8px; background: #fff; border-radius: 8px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15); padding: 8px 12px;
+      max-width: 420px; width: calc(100% - 24px);
+    }
+    .search-panel input {
+      flex: 1; border: none; outline: none; font-size: 14px;
+      padding: 6px 0; color: #333;
+    }
+    .search-panel input::placeholder { color: #aaa; }
+    .search-panel button {
+      background: #2563eb; color: #fff; border: none; border-radius: 6px;
+      padding: 6px 16px; font-size: 13px; cursor: pointer;
+      white-space: nowrap; transition: background 0.2s;
+    }
+    .search-panel button:hover { background: #1d4ed8; }
+    .search-panel button:disabled { background: #94a3b8; cursor: not-allowed; }
+
+    /* 加载提示 */
+    .loading-bar {
+      position: absolute; top: 60px; left: 50%; transform: translateX(-50%); z-index: 10;
+      background: rgba(0,0,0,0.75); color: #fff; font-size: 12px;
+      padding: 6px 16px; border-radius: 20px; display: none; pointer-events: none;
+    }
+    .loading-bar.show { display: block; }
+
+    /* 坐标 */
+    .coords {
+      position: absolute; bottom: 12px; left: 12px; z-index: 10;
+      background: rgba(0,0,0,0.6); color: #fff; font-size: 11px;
+      padding: 4px 10px; border-radius: 4px; font-family: "SF Mono", Monaco, monospace;
+    }
+
+    /* 状态指示 */
+    .status-dot {
+      display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+      margin-right: 4px; vertical-align: middle;
+    }
+    .status-dot.online { background: #22c55e; }
+    .status-dot.offline { background: #ef4444; }
+
+    @media (max-width: 600px) {
+      .search-panel { flex-direction: column; gap: 6px; max-width: 260px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <div class="coords" id="coords"></div>
+  <div class="loading-bar" id="loading">搜索中...</div>
+
+  <!-- 搜索面板 -->
+  <div class="search-panel">
+    <input
+      type="text" id="searchInput"
+      placeholder="搜索地点，如：徐家汇、上海市、北京..."
+      autocomplete="off"
+    />
+    <button id="searchBtn" onclick="doSearch()">搜索</button>
+  </div>
+
+  <script>
+    const API_BASE = 'http://localhost:1234/api';
+
+    const map = new maplibregl.Map({
+      container: 'map',
+      style: `${API_BASE}/styles/osm-bright`,
+      center: [104, 35],
+      zoom: 4,
+      maxZoom: 18
+    });
+    map.addControl(new maplibregl.NavigationControl(), 'top-right');
+    map.addControl(new maplibregl.AttributionControl({ compact: true }), 'bottom-right');
+
+    // 坐标显示
+    map.on('mousemove', e => {
+      const { lng, lat } = e.lngLat;
+      document.getElementById('coords').textContent =
+        `经度: ${lng.toFixed(6)}  纬度: ${lat.toFixed(6)}  缩放: ${map.getZoom().toFixed(1)}`;
+    });
+
+    // 点击地图 → 反向地理编码
+    map.on('click', async e => {
+      const { lat, lng } = e.lngLat;
+      showLoading(true);
+      try {
+        const res = await fetch(`${API_BASE}/search/reverse?lat=${lat}&lon=${lng}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+
+        if (data && data.display_name) {
+          new maplibregl.Popup({ maxWidth: '320px' })
+            .setLngLat([lng, lat])
+            .setHTML(`
+              <div style="padding:4px 0;">
+                <strong style="font-size:14px;color:#1f2937;">${escapeHtml(data.display_name)}</strong>
+                <div style="font-size:12px;color:#6b7280;margin-top:4px;">
+                  ${data.lat}, ${data.lon}
+                </div>
+                <div style="font-size:11px;color:#9ca3af;margin-top:2px;">
+                  ${data.category || ''} / ${data.type || ''}
+                </div>
+              </div>
+            `)
+            .addTo(map);
+        } else {
+          new maplibregl.Popup()
+            .setLngLat([lng, lat])
+            .setText(`${lat.toFixed(6)}, ${lng.toFixed(6)}`)
+            .addTo(map);
+        }
+      } catch (err) {
+        console.warn('反向地理编码失败:', err.message);
+        new maplibregl.Popup()
+          .setLngLat([lng, lat])
+          .setText(`${lat.toFixed(6)}, ${lng.toFixed(6)}`)
+          .addTo(map);
+      } finally {
+        showLoading(false);
+      }
+    });
+
+    // 正向搜索
+    async function doSearch() {
+      const input = document.getElementById('searchInput');
+      const btn = document.getElementById('searchBtn');
+      const query = input.value.trim();
+      if (!query) return;
+
+      btn.disabled = true;
+      showLoading(true);
+
+      try {
+        const res = await fetch(`${API_BASE}/search?q=${encodeURIComponent(query)}&limit=5`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const results = await res.json();
+
+        if (!results.length) {
+          alert(`未找到 "${query}" 相关结果`);
+          return;
+        }
+
+        // 清除旧标记
+        document.querySelectorAll('.maplibregl-marker').forEach(m => m.remove());
+
+        // 飞到第一个结果
+        const first = results[0];
+        map.flyTo({
+          center: [parseFloat(first.lon), parseFloat(first.lat)],
+          zoom: 14,
+          duration: 1500
+        });
+
+        // 标记所有结果
+        results.forEach((place, i) => {
+          const marker = new maplibregl.Marker({ color: i === 0 ? '#dc2626' : '#2563eb' })
+            .setLngLat([parseFloat(place.lon), parseFloat(place.lat)])
+            .addTo(map);
+
+          marker.getElement().addEventListener('click', () => {
+            new maplibregl.Popup({ offset: 25 })
+              .setLngLat([parseFloat(place.lon), parseFloat(place.lat)])
+              .setHTML(`
+                <div style="padding:4px 0;">
+                  <strong style="font-size:13px;color:#1f2937;">${escapeHtml(place.display_name)}</strong>
+                  <div style="font-size:11px;color:#6b7280;margin-top:4px;">
+                    ${place.category || ''} ${place.type || ''}
+                  </div>
+                </div>
+              `)
+              .addTo(map);
+          });
+        });
+      } catch (err) {
+        console.error('搜索失败:', err);
+        alert('搜索服务不可用，请确认服务器已启动');
+      } finally {
+        btn.disabled = false;
+        showLoading(false);
+      }
+    }
+
+    // 回车触发搜索
+    document.getElementById('searchInput').addEventListener('keydown', e => {
+      if (e.key === 'Enter') doSearch();
+    });
+
+    function showLoading(s) {
+      document.getElementById('loading').classList.toggle('show', s);
+    }
+
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    map.on('load', () => console.log('地图就绪'));
+  </script>
+</body>
+</html>
