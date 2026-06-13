@@ -399,7 +399,7 @@
         "text-font": [
           "Arial Unicode MS Regular"
         ],
-        "text-size": 9,
+        "text-size": 11,
         "text-anchor": "top",
         "text-offset": [
           0,
@@ -421,7 +421,7 @@
           ],
           "-15"
         ],
-        "icon-size": 0.5,
+        "icon-size": 0.9,
         "icon-allow-overlap": true
       },
       "paint": {

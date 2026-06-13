@@ -22,8 +22,15 @@ module.exports.get = (req, res, next) => {
   const projectRoot = req.app.get('PROJECT_ROOT')
   const stylePath = path.resolve(projectRoot, 'data/styles', `${styleId}.json`)
 
-  res.sendFile(stylePath, err => {
+  fs.readFile(stylePath, 'utf-8', (err, data) => {
     if (err) return next(err)
+
+    // 动态替换 API 地址：localhost:1234 → 实际请求的 host
+    const host = req.headers.host || 'localhost:1234'
+    const result = data.replace(/localhost:1234/g, host)
+
+    res.set('Content-Type', 'application/json')
+    res.send(result)
   })
 }
 

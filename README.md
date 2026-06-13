@@ -60,11 +60,18 @@ server-map/
 └── dist/                        # pkg 打包输出
 ```
 
-## 打包部署（通用）
+## 打包部署
 
 ```bash
 pnpm dist    # 输出 dist/server-map-{win.exe,linux,macos}
 ```
+
+> **重要**：由于 `sqlite3` 是原生模块，必须在**目标平台**上构建：
+> - Windows exe → 在 Windows 上运行 `pnpm dist`
+> - Linux 二进制 → 在 Linux（或 WSL）上运行 `pnpm dist`
+> - macOS 二进制 → 在 macOS 上运行 `pnpm dist`
+>
+> 跨平台交叉编译会导致 `invalid ELF header` 错误。
 
 部署结构（exe 放到任意位置即可，styles/fonts/sprites/public 已内置）：
 
@@ -72,6 +79,7 @@ pnpm dist    # 输出 dist/server-map-{win.exe,linux,macos}
 部署目录/
 ├── server-map-win.exe          # Windows
 │   （或 server-map-linux）     # Linux
+├── config.json                 # 数据库连接配置（可选）
 └── data/
     └── tilesets/
         └── china.mbtiles       # 52GB，单独拷贝
@@ -99,8 +107,29 @@ PORT=1234 ./server-map-linux
 | 组件 | Windows | Linux |
 |------|---------|-------|
 | PostgreSQL | ≥ 14 | ≥ 14 |
-| PostGIS 扩展 | 安装时勾选 | `apt install postgis` |
+| PostGIS 扩展 | 安装时勾选 | `postgresql-<版本>-postgis-3` |
 | hstore 扩展 | 安装时勾选 | 内置 |
+| pg_trgm 扩展 | 自动创建 | `CREATE EXTENSION` |
+
+> **版本匹配**：PostGIS 包名中的版本号必须与你的 PostgreSQL 一致。
+> - PostgreSQL 16 → `apt install postgresql-16-postgis-3`
+> - PostgreSQL 17 → `apt install postgresql-17-postgis-3`
+> - 执行 `psql --version` 查看版本，去掉补丁号（如 17.0 → 17）
+
+### 导出数据（从已有数据库）
+
+```powershell
+# Windows — 导出为纯 SQL（包含 placex + poi 两张表）
+& "C:\Program Files\PostgreSQL\18\bin\pg_dump" `
+  -U postgres -d nominatim `
+  --table=placex `
+  --table=poi `
+  --format=plain `
+  --no-owner `
+  --file=data\export\nominatim_full.sql
+```
+
+> 导出文件 `data/export/nominatim_full.sql`（约 6.3GB），纯文本 SQL，任何 PostgreSQL 版本均可导入。
 
 ---
 
@@ -133,15 +162,22 @@ CREATE DATABASE nominatim;
 ```sql
 CREATE EXTENSION IF NOT EXISTS postgis;
 CREATE EXTENSION IF NOT EXISTS hstore;
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
 -- 验证
 SELECT extname FROM pg_extension;
--- 应输出: postgis, hstore（加上 plpgsql）
+-- 应输出: postgis, hstore, plpgsql, pg_trgm
 \q
 ```
 
 #### 3. 导入数据
 
-将 `data/export/nominatim_placex.dump`（2.2GB）拷贝到 Windows 机器，然后：
+**方式一：纯 SQL（推荐，兼容所有版本）**
+
+```powershell
+& "C:\Program Files\PostgreSQL\18\bin\psql" -U postgres -d nominatim -f "C:\path\to\nominatim_full.sql"
+```
+
+**方式二：custom 格式（仅 pg_restore ≥ 18）**
 
 ```powershell
 & "C:\Program Files\PostgreSQL\18\bin\pg_restore" `
@@ -150,7 +186,7 @@ SELECT extname FROM pg_extension;
   "C:\path\to\nominatim_placex.dump"
 ```
 
-导入时间约 10–20 分钟（取决于磁盘速度）。
+导入时间约 10–20 分钟。首次导入时可能看到 `restrict` 或 `transaction_timeout` 警告，可忽略。
 
 #### 4. 验证
 
@@ -159,16 +195,28 @@ SELECT extname FROM pg_extension;
 # 预期输出: 8697443
 ```
 
-#### 5. 启动服务
+#### 5. 配置数据库连接
 
-确保 `app/services/search/controller.js` 中的连接配置与实际一致：
+在 exe 同目录下创建 `config.json`（如果不存在，可使用默认值 localhost:5432）：
 
-```js
-host: 'localhost',       // PostgreSQL 地址
-database: 'nominatim',   // 数据库名
-user: 'postgres',        // 用户名
-password: 'postgres',    // 密码
+```json
+{
+  "postgres": {
+    "host": "192.168.1.100",
+    "port": 5432,
+    "database": "nominatim",
+    "user": "postgres",
+    "password": "your_password"
+  }
+}
 ```
+
+> **配置优先级**（从高到低）：
+> 1. 环境变量 `PGHOST` / `PGDATABASE` / `PGUSER` / `PGPASSWORD` / `PGPORT`
+> 2. exe 同目录下的 `config.json`
+> 3. 内置默认值（localhost:5432 / postgres / postgres）
+
+#### 6. 启动服务
 
 启动 server-map 后验证搜索：
 
@@ -183,13 +231,25 @@ http://localhost:1234/api/search?q=上海       → [{"display_name":"上海市"
 
 #### 1. 安装 PostgreSQL + PostGIS
 
-```bash
-# Ubuntu / Debian
-sudo apt update
-sudo apt install -y postgresql postgresql-contrib postgis
+先确认 PostgreSQL 版本：
 
-# CentOS / RHEL
-sudo dnf install -y postgresql-server postgresql-contrib postgis
+```bash
+psql --version
+# 例如：psql (PostgreSQL) 16.0 — 主版本号是 16
+```
+
+安装对应版本的 PostGIS（**包名中的版本号必须匹配**）：
+
+```bash
+# Ubuntu / Debian（以 16 为例）
+sudo apt update
+sudo apt install -y postgresql-16-postgis-3
+
+# 其他版本：
+# postgresql-14-postgis-3    PostgreSQL 14
+# postgresql-15-postgis-3    PostgreSQL 15
+# postgresql-16-postgis-3    PostgreSQL 16
+# postgresql-17-postgis-3    PostgreSQL 17
 ```
 
 启动并设置密码：
@@ -207,23 +267,32 @@ CREATE DATABASE nominatim;
 \c nominatim
 CREATE EXTENSION IF NOT EXISTS postgis;
 CREATE EXTENSION IF NOT EXISTS hstore;
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
 SELECT extname FROM pg_extension;
 EOF
 ```
 
-预期输出：`postgis`, `hstore`, `plpgsql`。
+预期输出：`postgis`, `hstore`, `plpgsql`, `pg_trgm`。
 
 #### 3. 导入数据
 
-```bash
-# 上传 dump 文件到服务器
-scp data/export/nominatim_placex.dump user@server:/tmp/
+**方式一：纯 SQL（推荐，兼容所有版本）**
 
-# 导入
-sudo -u postgres pg_restore \
-  -d nominatim \
-  --no-owner --no-privileges \
-  /tmp/nominatim_placex.dump
+```bash
+# 上传 SQL 文件到服务器
+scp data/export/nominatim_full.sql user@server:/tmp/
+
+# 导入（约 20–40 分钟）
+sudo -u postgres psql -d nominatim -f /tmp/nominatim_full.sql
+```
+
+首次导入时可能看到 `restrict` 或 `transaction_timeout` 警告（pg_dump 18 输出的指令老版本不认识），不影响数据，可忽略。
+
+**方式二：custom 格式（仅 pg_restore ≥ 18）**
+
+```bash
+scp data/export/nominatim_placex.dump user@server:/tmp/
+sudo -u postgres pg_restore -d nominatim --no-owner --no-privileges /tmp/nominatim_placex.dump
 ```
 
 #### 4. 验证
@@ -231,9 +300,15 @@ sudo -u postgres pg_restore \
 ```bash
 sudo -u postgres psql -d nominatim -c "SELECT count(*) FROM placex;"
 # 预期输出: 8697443
+sudo -u postgres psql -d nominatim -c "SELECT count(*) FROM poi;"
+# 预期输出: 148837 
 ```
 
-#### 5. 允许 TCP 连接（如需远程访问）
+#### 5. 配置数据库连接
+
+在 exe 同目录下创建 `config.json`（参考 Windows 第 5 步），或通过 systemd 环境变量配置。
+
+#### 6. 允许 TCP 连接（如需远程访问）
 
 编辑 `pg_hba.conf`（路径如 `/etc/postgresql/16/main/pg_hba.conf`），添加：
 
@@ -248,7 +323,7 @@ host    nominatim    postgres    127.0.0.1/32    md5
 sudo systemctl restart postgresql
 ```
 
-#### 6. 启动服务 + 开机自启
+#### 7. 启动服务 + 开机自启
 
 参考 [systemd 配置](#linux-开机自启-systemd) 章节。
 
@@ -316,6 +391,8 @@ Type=simple
 User=root
 WorkingDirectory=/opt/server-map
 Environment=PORT=1234
+Environment=PGHOST=localhost
+Environment=PGPASSWORD=your_password
 ExecStart=/opt/server-map/server-map-linux
 Restart=always
 RestartSec=10

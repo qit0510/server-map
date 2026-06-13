@@ -3,7 +3,7 @@
   "sources": {
     "admin": {
       "type": "vector",
-      "url": "/api/tilesets/admin/tilejson"
+      "url": "http://localhost:1234/api/tilesets/admin/tilejson"
     }
   },
   "layers": [

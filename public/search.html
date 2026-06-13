@@ -69,21 +69,21 @@
   <div class="search-panel">
     <input
       type="text" id="searchInput"
-      placeholder="搜索地点，如：徐家汇、上海市、北京..."
+      placeholder="搜索地点，如：徐家汇、北京、万达广场..."
       autocomplete="off"
     />
     <button id="searchBtn" onclick="doSearch()">搜索</button>
   </div>
 
   <script>
-    const API_BASE = 'http://localhost:1234/api';
+    const API_BASE = '/api';
 
     const map = new maplibregl.Map({
       container: 'map',
       style: `${API_BASE}/styles/osm-bright`,
-      center: [104, 35],
-      zoom: 4,
-      maxZoom: 18
+      center: [121.50016844,31.07504100],
+      zoom: 10,
+      maxZoom: 22
     });
     map.addControl(new maplibregl.NavigationControl(), 'top-right');
     map.addControl(new maplibregl.AttributionControl({ compact: true }), 'bottom-right');
