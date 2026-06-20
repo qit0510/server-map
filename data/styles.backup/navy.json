@@ -1,6 +1,6 @@
 {
   "version": 8,
-  "name": "Cyberpunk (赛博朋克)",
+  "name": "Navy (海军蓝指挥大屏)",
   "center": [
     104,
     35
@@ -16,19 +16,55 @@
   "glyphs": "http://localhost:1234/api/fonts/{fontstack}/{range}.pbf",
   "layers": [
     {
-      "id": "bg",
+      "id": "background",
       "type": "background",
       "paint": {
-        "background-color": "#050510"
+        "background-color": "#050E28"
       }
     },
     {
-      "id": "landuse",
+      "id": "landuse_residential",
       "type": "fill",
       "source": "openmaptiles",
       "source-layer": "landuse",
+      "filter": [
+        "==",
+        "class",
+        "residential"
+      ],
       "paint": {
-        "fill-color": "#0a0a20",
+        "fill-color": "#071232",
+        "fill-opacity": 0.7
+      }
+    },
+    {
+      "id": "landuse_industrial",
+      "type": "fill",
+      "source": "openmaptiles",
+      "source-layer": "landuse",
+      "filter": [
+        "==",
+        "class",
+        "industrial"
+      ],
+      "paint": {
+        "fill-color": "#081536",
+        "fill-opacity": 0.6
+      }
+    },
+    {
+      "id": "landuse_commercial",
+      "type": "fill",
+      "source": "openmaptiles",
+      "source-layer": "landuse",
+      "filter": [
+        "in",
+        "class",
+        "commercial",
+        "retail"
+      ],
+      "paint": {
+        "fill-color": "#081538",
         "fill-opacity": 0.5
       }
     },
@@ -43,8 +79,8 @@
         "wood"
       ],
       "paint": {
-        "fill-color": "#002210",
-        "fill-opacity": 0.4
+        "fill-color": "#041a0e",
+        "fill-opacity": 0.35
       }
     },
     {
@@ -58,8 +94,33 @@
         "grass"
       ],
       "paint": {
-        "fill-color": "#001a10",
+        "fill-color": "#041a10",
         "fill-opacity": 0.3
+      }
+    },
+    {
+      "id": "landcover_crop",
+      "type": "fill",
+      "source": "openmaptiles",
+      "source-layer": "landcover",
+      "filter": [
+        "==",
+        "class",
+        "crop"
+      ],
+      "paint": {
+        "fill-color": "#081a08",
+        "fill-opacity": 0.3
+      }
+    },
+    {
+      "id": "park",
+      "type": "fill",
+      "source": "openmaptiles",
+      "source-layer": "park",
+      "paint": {
+        "fill-color": "#041a10",
+        "fill-opacity": 0.4
       }
     },
     {
@@ -68,7 +129,18 @@
       "source": "openmaptiles",
       "source-layer": "water",
       "paint": {
-        "fill-color": "#001030"
+        "fill-color": "#0A2350"
+      }
+    },
+    {
+      "id": "water_pattern",
+      "type": "fill",
+      "source": "openmaptiles",
+      "source-layer": "water",
+      "paint": {
+        "fill-color": "#0D2A5A",
+        "fill-opacity": 0.3,
+        "fill-antialias": true
       }
     },
     {
@@ -77,12 +149,13 @@
       "source": "openmaptiles",
       "source-layer": "waterway",
       "filter": [
-        "==",
+        "in",
         "class",
-        "river"
+        "river",
+        "canal"
       ],
       "paint": {
-        "line-color": "#001030",
+        "line-color": "#0A2350",
         "line-width": [
           "interpolate",
           [
@@ -94,7 +167,9 @@
           8,
           1,
           12,
-          3
+          3,
+          14,
+          5
         ]
       }
     },
@@ -124,11 +199,12 @@
         "text-font": [
           "Arial Unicode MS Regular"
         ],
-        "text-size": 11
+        "text-size": 11,
+        "symbol-placement": "point"
       },
       "paint": {
-        "text-color": "#00aaff",
-        "text-halo-color": "rgba(5,5,16,0.9)",
+        "text-color": "#4477aa",
+        "text-halo-color": "rgba(5,14,40,0.85)",
         "text-halo-width": 1
       }
     },
@@ -139,8 +215,73 @@
       "source-layer": "building",
       "minzoom": 13,
       "paint": {
-        "fill-color": "#100820",
-        "fill-outline-color": "#200840"
+        "fill-color": "#0C1A3A",
+        "fill-outline-color": "#081530",
+        "fill-opacity": 0.9
+      }
+    },
+    {
+      "id": "building_3d",
+      "type": "fill-extrusion",
+      "source": "openmaptiles",
+      "source-layer": "building",
+      "minzoom": 14,
+      "paint": {
+        "fill-extrusion-color": "#0F2045",
+        "fill-extrusion-height": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          14,
+          0,
+          16,
+          [
+            "get",
+            "render_height"
+          ]
+        ],
+        "fill-extrusion-base": [
+          "get",
+          "render_min_height"
+        ],
+        "fill-extrusion-opacity": 0.8
+      }
+    },
+    {
+      "id": "road_motorway_casing",
+      "type": "line",
+      "source": "openmaptiles",
+      "source-layer": "transportation",
+      "filter": [
+        "==",
+        "class",
+        "motorway"
+      ],
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#0A1E40",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          5,
+          2,
+          10,
+          7,
+          14,
+          16
+        ]
       }
     },
     {
@@ -158,7 +299,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#ff0088",
+        "line-color": "#1F4A88",
         "line-width": [
           "interpolate",
           [
@@ -170,28 +311,28 @@
           5,
           1,
           10,
-          5,
+          4,
           14,
-          12
-        ],
-        "line-blur": 1
+          10
+        ]
       }
     },
     {
-      "id": "road_motorway_glow",
+      "id": "road_trunk_casing",
       "type": "line",
       "source": "openmaptiles",
       "source-layer": "transportation",
       "filter": [
-        "==",
+        "in",
         "class",
-        "motorway"
+        "trunk"
       ],
       "layout": {
-        "line-cap": "round"
+        "line-cap": "round",
+        "line-join": "round"
       },
       "paint": {
-        "line-color": "#ff0088",
+        "line-color": "#081A38",
         "line-width": [
           "interpolate",
           [
@@ -201,12 +342,12 @@
             "zoom"
           ],
           5,
-          3,
+          2,
+          10,
+          5,
           14,
-          14
-        ],
-        "line-opacity": 0.15,
-        "line-blur": 3
+          12
+        ]
       }
     },
     {
@@ -217,15 +358,14 @@
       "filter": [
         "in",
         "class",
-        "trunk",
-        "primary"
+        "trunk"
       ],
       "layout": {
         "line-cap": "round",
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#cc00aa",
+        "line-color": "#1B4070",
         "line-width": [
           "interpolate",
           [
@@ -240,8 +380,40 @@
           3,
           14,
           8
-        ],
-        "line-blur": 0.5
+        ]
+      }
+    },
+    {
+      "id": "road_primary",
+      "type": "line",
+      "source": "openmaptiles",
+      "source-layer": "transportation",
+      "filter": [
+        "==",
+        "class",
+        "primary"
+      ],
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#163560",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          5,
+          1,
+          10,
+          2.5,
+          14,
+          6
+        ]
       }
     },
     {
@@ -260,7 +432,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#0066cc",
+        "line-color": "#122D50",
         "line-width": [
           "interpolate",
           [
@@ -274,7 +446,7 @@
           12,
           2,
           16,
-          5
+          4
         ]
       }
     },
@@ -292,8 +464,28 @@
       ],
       "minzoom": 13,
       "paint": {
-        "line-color": "#002244",
+        "line-color": "#0D2240",
         "line-width": 0.8
+      }
+    },
+    {
+      "id": "road_path",
+      "type": "line",
+      "source": "openmaptiles",
+      "source-layer": "transportation",
+      "filter": [
+        "==",
+        "class",
+        "path"
+      ],
+      "minzoom": 14,
+      "paint": {
+        "line-color": "#091A35",
+        "line-width": 0.6,
+        "line-dasharray": [
+          3,
+          2
+        ]
       }
     },
     {
@@ -331,14 +523,14 @@
             "zoom"
           ],
           5,
+          11,
           10,
-          10,
-          16
+          17
         ]
       },
       "paint": {
-        "text-color": "#00ffcc",
-        "text-halo-color": "rgba(5,5,16,0.9)",
+        "text-color": "#8899cc",
+        "text-halo-color": "rgba(5,14,40,0.9)",
         "text-halo-width": 1.5
       }
     },
@@ -352,7 +544,8 @@
         "class",
         "village",
         "hamlet",
-        "suburb"
+        "suburb",
+        "neighbourhood"
       ],
       "minzoom": 10,
       "layout": {
@@ -370,12 +563,50 @@
         "text-font": [
           "Arial Unicode MS Regular"
         ],
-        "text-size": 9
+        "text-size": 10
       },
       "paint": {
-        "text-color": "#00cc88",
-        "text-halo-color": "rgba(5,5,16,0.8)",
+        "text-color": "#667799",
+        "text-halo-color": "rgba(5,14,40,0.85)",
         "text-halo-width": 1
+      }
+    },
+    {
+      "id": "road_label",
+      "type": "symbol",
+      "source": "openmaptiles",
+      "source-layer": "transportation_name",
+      "filter": [
+        "in",
+        "class",
+        "motorway",
+        "trunk",
+        "primary"
+      ],
+      "minzoom": 10,
+      "layout": {
+        "text-field": [
+          "coalesce",
+          [
+            "get",
+            "name:zh"
+          ],
+          [
+            "get",
+            "name"
+          ]
+        ],
+        "text-font": [
+          "Arial Unicode MS Regular"
+        ],
+        "text-size": 10,
+        "symbol-placement": "line",
+        "text-rotation-alignment": "map"
+      },
+      "paint": {
+        "text-color": "#99aacc",
+        "text-halo-color": "rgba(5,14,40,0.85)",
+        "text-halo-width": 1.2
       }
     },
     {
@@ -425,13 +656,42 @@
         "icon-allow-overlap": true
       },
       "paint": {
-        "text-color": "#00ddbb",
-        "text-halo-color": "rgba(5,5,16,0.8)",
+        "text-color": "#5577aa",
+        "text-halo-color": "rgba(5,14,40,0.85)",
         "text-halo-width": 1
       }
     },
     {
-      "id": "boundary",
+      "id": "mountain_peak",
+      "type": "symbol",
+      "source": "openmaptiles",
+      "source-layer": "mountain_peak",
+      "minzoom": 10,
+      "layout": {
+        "text-field": [
+          "coalesce",
+          [
+            "get",
+            "name:zh"
+          ],
+          [
+            "get",
+            "name"
+          ]
+        ],
+        "text-font": [
+          "Arial Unicode MS Regular"
+        ],
+        "text-size": 9
+      },
+      "paint": {
+        "text-color": "#556688",
+        "text-halo-color": "rgba(5,14,40,0.8)",
+        "text-halo-width": 1
+      }
+    },
+    {
+      "id": "boundary_country",
       "type": "line",
       "source": "openmaptiles",
       "source-layer": "boundary",
@@ -442,7 +702,7 @@
       ],
       "minzoom": 1,
       "paint": {
-        "line-color": "#003355",
+        "line-color": "#1A3050",
         "line-width": [
           "interpolate",
           [
@@ -457,163 +717,35 @@
           1.5
         ],
         "line-dasharray": [
-          6,
-          3
-        ]
-      },
-      "layout": {
-        "visibility": "none"
-      }
-    },
-    {
-      "id": "china-boundary-national",
-      "type": "line",
-      "source": "openmaptiles",
-      "source-layer": "national_boundary",
-      "minzoom": 0,
-      "maxzoom": 8,
-      "filter": [
-        "in",
-        [
-          "get",
-          "GBCODE"
-        ],
-        [
-          "literal",
-          [
-            61010,
-            26010,
-            61020,
-            62010,
-            99001
-          ]
-        ]
-      ],
-      "paint": {
-        "line-color": "#b03020",
-        "line-width": [
-          "interpolate",
-          [
-            "linear"
-          ],
-          [
-            "zoom"
-          ],
-          2,
-          0.5,
-          5,
-          0.9,
-          10,
-          1.5
-        ],
-        "line-opacity": 0.6
-      }
-    },
-    {
-      "id": "china-nine-dash",
-      "type": "line",
-      "source": "openmaptiles",
-      "source-layer": "national_boundary",
-      "minzoom": 2,
-      "maxzoom": 6,
-      "filter": [
-        "in",
-        [
-          "get",
-          "GBCODE"
-        ],
-        [
-          "literal",
-          [
-            26080,
-            26100
-          ]
-        ]
-      ],
-      "paint": {
-        "line-color": "#b03020",
-        "line-width": [
-          "interpolate",
-          [
-            "linear"
-          ],
-          [
-            "zoom"
-          ],
-          3,
-          0.5,
-          6,
-          1.0,
-          10,
-          1.8
-        ],
-        "line-dasharray": [
-          6,
-          3
-        ],
-        "line-opacity": 0.6
-      }
-    },
-    {
-      "id": "china-boundary-province",
-      "type": "line",
-      "source": "openmaptiles",
-      "source-layer": "province_boundary",
-      "minzoom": 2,
-      "maxzoom": 12,
-      "paint": {
-        "line-color": "#d0a0a0",
-        "line-width": [
-          "interpolate",
-          [
-            "linear"
-          ],
-          [
-            "zoom"
-          ],
-          4,
-          0.3,
           8,
-          0.6,
-          12,
-          1.0
-        ],
-        "line-opacity": 0.4
+          3,
+          2,
+          3
+        ]
       }
     },
     {
-      "id": "china-boundary-city",
+      "id": "boundary_admin",
       "type": "line",
       "source": "openmaptiles",
-      "source-layer": "city_boundary",
+      "source-layer": "boundary",
+      "filter": [
+        ">",
+        "admin_level",
+        2
+      ],
       "minzoom": 5,
-      "maxzoom": 14,
       "paint": {
-        "line-color": "#ccc",
-        "line-width": [
-          "interpolate",
-          [
-            "linear"
-          ],
-          [
-            "zoom"
-          ],
-          6,
-          0.2,
-          10,
-          0.4,
-          14,
-          0.6
-        ],
+        "line-color": "#102540",
+        "line-width": 0.6,
         "line-dasharray": [
           4,
-          3
-        ],
-        "line-opacity": 0.3
+          2
+        ]
       }
     },
     {
-      "id": "aeroway",
+      "id": "aeroway_runway",
       "type": "line",
       "source": "openmaptiles",
       "source-layer": "aeroway",
@@ -624,7 +756,7 @@
       ],
       "minzoom": 10,
       "paint": {
-        "line-color": "#001133",
+        "line-color": "#102840",
         "line-width": [
           "interpolate",
           [
@@ -636,10 +768,26 @@
           10,
           1,
           14,
-          4
+          5
         ]
+      }
+    },
+    {
+      "id": "aeroway_taxiway",
+      "type": "line",
+      "source": "openmaptiles",
+      "source-layer": "aeroway",
+      "filter": [
+        "==",
+        "class",
+        "taxiway"
+      ],
+      "minzoom": 12,
+      "paint": {
+        "line-color": "#0C1E38",
+        "line-width": 1
       }
     }
   ],
-  "id": "cyberpunk"
+  "id": "navy"
 }

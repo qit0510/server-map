@@ -1,6 +1,6 @@
 {
   "version": 8,
-  "name": "Cyberpunk (赛博朋克)",
+  "name": "Satellite (卫星地球)",
   "center": [
     104,
     35
@@ -19,17 +19,37 @@
       "id": "bg",
       "type": "background",
       "paint": {
-        "background-color": "#050510"
+        "background-color": "#e8e0d0"
       }
     },
     {
-      "id": "landuse",
+      "id": "landuse_residential",
       "type": "fill",
       "source": "openmaptiles",
       "source-layer": "landuse",
+      "filter": [
+        "==",
+        "class",
+        "residential"
+      ],
       "paint": {
-        "fill-color": "#0a0a20",
-        "fill-opacity": 0.5
+        "fill-color": "#e0d4be",
+        "fill-opacity": 0.7
+      }
+    },
+    {
+      "id": "landuse_industrial",
+      "type": "fill",
+      "source": "openmaptiles",
+      "source-layer": "landuse",
+      "filter": [
+        "==",
+        "class",
+        "industrial"
+      ],
+      "paint": {
+        "fill-color": "#d8ccb5",
+        "fill-opacity": 0.7
       }
     },
     {
@@ -43,8 +63,8 @@
         "wood"
       ],
       "paint": {
-        "fill-color": "#002210",
-        "fill-opacity": 0.4
+        "fill-color": "#90a878",
+        "fill-opacity": 0.5
       }
     },
     {
@@ -58,8 +78,33 @@
         "grass"
       ],
       "paint": {
-        "fill-color": "#001a10",
-        "fill-opacity": 0.3
+        "fill-color": "#a8b888",
+        "fill-opacity": 0.4
+      }
+    },
+    {
+      "id": "landcover_crop",
+      "type": "fill",
+      "source": "openmaptiles",
+      "source-layer": "landcover",
+      "filter": [
+        "==",
+        "class",
+        "crop"
+      ],
+      "paint": {
+        "fill-color": "#c8b878",
+        "fill-opacity": 0.5
+      }
+    },
+    {
+      "id": "park",
+      "type": "fill",
+      "source": "openmaptiles",
+      "source-layer": "park",
+      "paint": {
+        "fill-color": "#98b080",
+        "fill-opacity": 0.5
       }
     },
     {
@@ -68,7 +113,7 @@
       "source": "openmaptiles",
       "source-layer": "water",
       "paint": {
-        "fill-color": "#001030"
+        "fill-color": "#98b8d0"
       }
     },
     {
@@ -82,7 +127,7 @@
         "river"
       ],
       "paint": {
-        "line-color": "#001030",
+        "line-color": "#98b8d0",
         "line-width": [
           "interpolate",
           [
@@ -127,8 +172,8 @@
         "text-size": 11
       },
       "paint": {
-        "text-color": "#00aaff",
-        "text-halo-color": "rgba(5,5,16,0.9)",
+        "text-color": "#4a7088",
+        "text-halo-color": "rgba(232,224,208,0.8)",
         "text-halo-width": 1
       }
     },
@@ -139,8 +184,8 @@
       "source-layer": "building",
       "minzoom": 13,
       "paint": {
-        "fill-color": "#100820",
-        "fill-outline-color": "#200840"
+        "fill-color": "#ccc0a8",
+        "fill-outline-color": "#b8ac94"
       }
     },
     {
@@ -158,7 +203,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#ff0088",
+        "line-color": "#f0c070",
         "line-width": [
           "interpolate",
           [
@@ -173,40 +218,7 @@
           5,
           14,
           12
-        ],
-        "line-blur": 1
-      }
-    },
-    {
-      "id": "road_motorway_glow",
-      "type": "line",
-      "source": "openmaptiles",
-      "source-layer": "transportation",
-      "filter": [
-        "==",
-        "class",
-        "motorway"
-      ],
-      "layout": {
-        "line-cap": "round"
-      },
-      "paint": {
-        "line-color": "#ff0088",
-        "line-width": [
-          "interpolate",
-          [
-            "linear"
-          ],
-          [
-            "zoom"
-          ],
-          5,
-          3,
-          14,
-          14
-        ],
-        "line-opacity": 0.15,
-        "line-blur": 3
+        ]
       }
     },
     {
@@ -225,7 +237,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#cc00aa",
+        "line-color": "#f8d888",
         "line-width": [
           "interpolate",
           [
@@ -240,8 +252,7 @@
           3,
           14,
           8
-        ],
-        "line-blur": 0.5
+        ]
       }
     },
     {
@@ -260,7 +271,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#0066cc",
+        "line-color": "#f0e8d8",
         "line-width": [
           "interpolate",
           [
@@ -274,7 +285,7 @@
           12,
           2,
           16,
-          5
+          6
         ]
       }
     },
@@ -288,11 +299,12 @@
         "class",
         "minor",
         "service",
-        "track"
+        "track",
+        "path"
       ],
       "minzoom": 13,
       "paint": {
-        "line-color": "#002244",
+        "line-color": "#d8d0c0",
         "line-width": 0.8
       }
     },
@@ -337,8 +349,8 @@
         ]
       },
       "paint": {
-        "text-color": "#00ffcc",
-        "text-halo-color": "rgba(5,5,16,0.9)",
+        "text-color": "#4a3a2a",
+        "text-halo-color": "rgba(232,224,208,0.8)",
         "text-halo-width": 1.5
       }
     },
@@ -373,8 +385,8 @@
         "text-size": 9
       },
       "paint": {
-        "text-color": "#00cc88",
-        "text-halo-color": "rgba(5,5,16,0.8)",
+        "text-color": "#5a4a3a",
+        "text-halo-color": "rgba(232,224,208,0.8)",
         "text-halo-width": 1
       }
     },
@@ -425,8 +437,8 @@
         "icon-allow-overlap": true
       },
       "paint": {
-        "text-color": "#00ddbb",
-        "text-halo-color": "rgba(5,5,16,0.8)",
+        "text-color": "#5a4a3a",
+        "text-halo-color": "rgba(232,224,208,0.8)",
         "text-halo-width": 1
       }
     },
@@ -442,7 +454,7 @@
       ],
       "minzoom": 1,
       "paint": {
-        "line-color": "#003355",
+        "line-color": "#b0a090",
         "line-width": [
           "interpolate",
           [
@@ -460,156 +472,6 @@
           6,
           3
         ]
-      },
-      "layout": {
-        "visibility": "none"
-      }
-    },
-    {
-      "id": "china-boundary-national",
-      "type": "line",
-      "source": "openmaptiles",
-      "source-layer": "national_boundary",
-      "minzoom": 0,
-      "maxzoom": 8,
-      "filter": [
-        "in",
-        [
-          "get",
-          "GBCODE"
-        ],
-        [
-          "literal",
-          [
-            61010,
-            26010,
-            61020,
-            62010,
-            99001
-          ]
-        ]
-      ],
-      "paint": {
-        "line-color": "#b03020",
-        "line-width": [
-          "interpolate",
-          [
-            "linear"
-          ],
-          [
-            "zoom"
-          ],
-          2,
-          0.5,
-          5,
-          0.9,
-          10,
-          1.5
-        ],
-        "line-opacity": 0.6
-      }
-    },
-    {
-      "id": "china-nine-dash",
-      "type": "line",
-      "source": "openmaptiles",
-      "source-layer": "national_boundary",
-      "minzoom": 2,
-      "maxzoom": 6,
-      "filter": [
-        "in",
-        [
-          "get",
-          "GBCODE"
-        ],
-        [
-          "literal",
-          [
-            26080,
-            26100
-          ]
-        ]
-      ],
-      "paint": {
-        "line-color": "#b03020",
-        "line-width": [
-          "interpolate",
-          [
-            "linear"
-          ],
-          [
-            "zoom"
-          ],
-          3,
-          0.5,
-          6,
-          1.0,
-          10,
-          1.8
-        ],
-        "line-dasharray": [
-          6,
-          3
-        ],
-        "line-opacity": 0.6
-      }
-    },
-    {
-      "id": "china-boundary-province",
-      "type": "line",
-      "source": "openmaptiles",
-      "source-layer": "province_boundary",
-      "minzoom": 2,
-      "maxzoom": 12,
-      "paint": {
-        "line-color": "#d0a0a0",
-        "line-width": [
-          "interpolate",
-          [
-            "linear"
-          ],
-          [
-            "zoom"
-          ],
-          4,
-          0.3,
-          8,
-          0.6,
-          12,
-          1.0
-        ],
-        "line-opacity": 0.4
-      }
-    },
-    {
-      "id": "china-boundary-city",
-      "type": "line",
-      "source": "openmaptiles",
-      "source-layer": "city_boundary",
-      "minzoom": 5,
-      "maxzoom": 14,
-      "paint": {
-        "line-color": "#ccc",
-        "line-width": [
-          "interpolate",
-          [
-            "linear"
-          ],
-          [
-            "zoom"
-          ],
-          6,
-          0.2,
-          10,
-          0.4,
-          14,
-          0.6
-        ],
-        "line-dasharray": [
-          4,
-          3
-        ],
-        "line-opacity": 0.3
       }
     },
     {
@@ -624,7 +486,7 @@
       ],
       "minzoom": 10,
       "paint": {
-        "line-color": "#001133",
+        "line-color": "#c8c0b0",
         "line-width": [
           "interpolate",
           [
@@ -641,5 +503,5 @@
       }
     }
   ],
-  "id": "cyberpunk"
+  "id": "satellite"
 }

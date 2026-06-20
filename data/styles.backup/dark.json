@@ -1,6 +1,6 @@
 {
   "version": 8,
-  "name": "Cyberpunk (赛博朋克)",
+  "name": "Dark (暗黑大屏)",
   "center": [
     104,
     35
@@ -19,7 +19,7 @@
       "id": "bg",
       "type": "background",
       "paint": {
-        "background-color": "#050510"
+        "background-color": "#0a0e17"
       }
     },
     {
@@ -28,8 +28,8 @@
       "source": "openmaptiles",
       "source-layer": "landuse",
       "paint": {
-        "fill-color": "#0a0a20",
-        "fill-opacity": 0.5
+        "fill-color": "#131a28",
+        "fill-opacity": 0.6
       }
     },
     {
@@ -43,7 +43,7 @@
         "wood"
       ],
       "paint": {
-        "fill-color": "#002210",
+        "fill-color": "#0f1a0f",
         "fill-opacity": 0.4
       }
     },
@@ -58,8 +58,18 @@
         "grass"
       ],
       "paint": {
-        "fill-color": "#001a10",
+        "fill-color": "#0f1a10",
         "fill-opacity": 0.3
+      }
+    },
+    {
+      "id": "park",
+      "type": "fill",
+      "source": "openmaptiles",
+      "source-layer": "park",
+      "paint": {
+        "fill-color": "#0f1a10",
+        "fill-opacity": 0.4
       }
     },
     {
@@ -68,7 +78,7 @@
       "source": "openmaptiles",
       "source-layer": "water",
       "paint": {
-        "fill-color": "#001030"
+        "fill-color": "#0d1b2a"
       }
     },
     {
@@ -82,7 +92,7 @@
         "river"
       ],
       "paint": {
-        "line-color": "#001030",
+        "line-color": "#0d1b2a",
         "line-width": [
           "interpolate",
           [
@@ -127,8 +137,8 @@
         "text-size": 11
       },
       "paint": {
-        "text-color": "#00aaff",
-        "text-halo-color": "rgba(5,5,16,0.9)",
+        "text-color": "#3a7aaa",
+        "text-halo-color": "rgba(10,14,23,0.8)",
         "text-halo-width": 1
       }
     },
@@ -139,8 +149,8 @@
       "source-layer": "building",
       "minzoom": 13,
       "paint": {
-        "fill-color": "#100820",
-        "fill-outline-color": "#200840"
+        "fill-color": "#162032",
+        "fill-outline-color": "#0f1825"
       }
     },
     {
@@ -158,7 +168,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#ff0088",
+        "line-color": "#2a3f5a",
         "line-width": [
           "interpolate",
           [
@@ -173,40 +183,7 @@
           5,
           14,
           12
-        ],
-        "line-blur": 1
-      }
-    },
-    {
-      "id": "road_motorway_glow",
-      "type": "line",
-      "source": "openmaptiles",
-      "source-layer": "transportation",
-      "filter": [
-        "==",
-        "class",
-        "motorway"
-      ],
-      "layout": {
-        "line-cap": "round"
-      },
-      "paint": {
-        "line-color": "#ff0088",
-        "line-width": [
-          "interpolate",
-          [
-            "linear"
-          ],
-          [
-            "zoom"
-          ],
-          5,
-          3,
-          14,
-          14
-        ],
-        "line-opacity": 0.15,
-        "line-blur": 3
+        ]
       }
     },
     {
@@ -225,7 +202,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#cc00aa",
+        "line-color": "#243750",
         "line-width": [
           "interpolate",
           [
@@ -240,8 +217,7 @@
           3,
           14,
           8
-        ],
-        "line-blur": 0.5
+        ]
       }
     },
     {
@@ -260,7 +236,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#0066cc",
+        "line-color": "#1e2e44",
         "line-width": [
           "interpolate",
           [
@@ -274,7 +250,7 @@
           12,
           2,
           16,
-          5
+          6
         ]
       }
     },
@@ -288,11 +264,12 @@
         "class",
         "minor",
         "service",
-        "track"
+        "track",
+        "path"
       ],
       "minzoom": 13,
       "paint": {
-        "line-color": "#002244",
+        "line-color": "#162230",
         "line-width": 0.8
       }
     },
@@ -337,8 +314,8 @@
         ]
       },
       "paint": {
-        "text-color": "#00ffcc",
-        "text-halo-color": "rgba(5,5,16,0.9)",
+        "text-color": "#8899bb",
+        "text-halo-color": "rgba(10,14,23,0.9)",
         "text-halo-width": 1.5
       }
     },
@@ -373,8 +350,8 @@
         "text-size": 9
       },
       "paint": {
-        "text-color": "#00cc88",
-        "text-halo-color": "rgba(5,5,16,0.8)",
+        "text-color": "#667a99",
+        "text-halo-color": "rgba(10,14,23,0.8)",
         "text-halo-width": 1
       }
     },
@@ -425,8 +402,8 @@
         "icon-allow-overlap": true
       },
       "paint": {
-        "text-color": "#00ddbb",
-        "text-halo-color": "rgba(5,5,16,0.8)",
+        "text-color": "#556688",
+        "text-halo-color": "rgba(10,14,23,0.8)",
         "text-halo-width": 1
       }
     },
@@ -442,7 +419,7 @@
       ],
       "minzoom": 1,
       "paint": {
-        "line-color": "#003355",
+        "line-color": "#1a3040",
         "line-width": [
           "interpolate",
           [
@@ -460,156 +437,6 @@
           6,
           3
         ]
-      },
-      "layout": {
-        "visibility": "none"
-      }
-    },
-    {
-      "id": "china-boundary-national",
-      "type": "line",
-      "source": "openmaptiles",
-      "source-layer": "national_boundary",
-      "minzoom": 0,
-      "maxzoom": 8,
-      "filter": [
-        "in",
-        [
-          "get",
-          "GBCODE"
-        ],
-        [
-          "literal",
-          [
-            61010,
-            26010,
-            61020,
-            62010,
-            99001
-          ]
-        ]
-      ],
-      "paint": {
-        "line-color": "#b03020",
-        "line-width": [
-          "interpolate",
-          [
-            "linear"
-          ],
-          [
-            "zoom"
-          ],
-          2,
-          0.5,
-          5,
-          0.9,
-          10,
-          1.5
-        ],
-        "line-opacity": 0.6
-      }
-    },
-    {
-      "id": "china-nine-dash",
-      "type": "line",
-      "source": "openmaptiles",
-      "source-layer": "national_boundary",
-      "minzoom": 2,
-      "maxzoom": 6,
-      "filter": [
-        "in",
-        [
-          "get",
-          "GBCODE"
-        ],
-        [
-          "literal",
-          [
-            26080,
-            26100
-          ]
-        ]
-      ],
-      "paint": {
-        "line-color": "#b03020",
-        "line-width": [
-          "interpolate",
-          [
-            "linear"
-          ],
-          [
-            "zoom"
-          ],
-          3,
-          0.5,
-          6,
-          1.0,
-          10,
-          1.8
-        ],
-        "line-dasharray": [
-          6,
-          3
-        ],
-        "line-opacity": 0.6
-      }
-    },
-    {
-      "id": "china-boundary-province",
-      "type": "line",
-      "source": "openmaptiles",
-      "source-layer": "province_boundary",
-      "minzoom": 2,
-      "maxzoom": 12,
-      "paint": {
-        "line-color": "#d0a0a0",
-        "line-width": [
-          "interpolate",
-          [
-            "linear"
-          ],
-          [
-            "zoom"
-          ],
-          4,
-          0.3,
-          8,
-          0.6,
-          12,
-          1.0
-        ],
-        "line-opacity": 0.4
-      }
-    },
-    {
-      "id": "china-boundary-city",
-      "type": "line",
-      "source": "openmaptiles",
-      "source-layer": "city_boundary",
-      "minzoom": 5,
-      "maxzoom": 14,
-      "paint": {
-        "line-color": "#ccc",
-        "line-width": [
-          "interpolate",
-          [
-            "linear"
-          ],
-          [
-            "zoom"
-          ],
-          6,
-          0.2,
-          10,
-          0.4,
-          14,
-          0.6
-        ],
-        "line-dasharray": [
-          4,
-          3
-        ],
-        "line-opacity": 0.3
       }
     },
     {
@@ -624,7 +451,7 @@
       ],
       "minzoom": 10,
       "paint": {
-        "line-color": "#001133",
+        "line-color": "#1a2a3a",
         "line-width": [
           "interpolate",
           [
@@ -641,5 +468,5 @@
       }
     }
   ],
-  "id": "cyberpunk"
+  "id": "dark"
 }
